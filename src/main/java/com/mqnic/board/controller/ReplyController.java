@@ -1,10 +1,13 @@
 package com.mqnic.board.controller;
 
 import com.mqnic.board.domain.Criteria;
+import com.mqnic.board.domain.ReplyPageDTO;
 import com.mqnic.board.domain.ReplyVO;
 import com.mqnic.board.service.ReplyService;
 import lombok.AllArgsConstructor;
+import lombok.Setter;
 import lombok.extern.log4j.Log4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +21,7 @@ import java.util.List;
 @AllArgsConstructor
 public class ReplyController {
 
+	@Setter(onMethod_={@Autowired})
 	private ReplyService replyService;
 
 	@PostMapping("/new")
@@ -34,11 +38,11 @@ public class ReplyController {
 	}
 
 	@GetMapping(value = "/pages/{bno}/{page}",produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_UTF8_VALUE})
-	public ResponseEntity<List<ReplyVO>> getList(@PathVariable("page") int page, @PathVariable("bno") Long bno) {
+	public ResponseEntity<ReplyPageDTO> getList(@PathVariable("page") int page, @PathVariable("bno") Long bno) {
 		log.info("Reply get List.....");
 
 		Criteria cri = new Criteria(page,10);
-		return new ResponseEntity<>(replyService.getList(cri,bno),HttpStatus.OK);
+		return new ResponseEntity<>(replyService.getListPage(cri,bno),HttpStatus.OK);
 	}
 
 	@GetMapping(value = "/{rno}", produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_UTF8_VALUE})

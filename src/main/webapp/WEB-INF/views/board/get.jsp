@@ -69,6 +69,9 @@
 					</li>
 				</ul>
 			</div>
+			<div class="panel-footer text-center">
+
+			</div>
 		</div>
 	</div>
 </div>
@@ -120,22 +123,30 @@
 		
 		function showList(page) {
 
-			replyService.getList({bno:bnoValue, page:page || 1},function (list) {
+			replyService.getList({bno:bnoValue, page:page || 1},function (replyCnt,list) {
 
+				if(page == -1) {
+					pageNum = Math.ceil(replyCnt/10.0);
+					showList(pageNum);
+					return;
+				}
 				var str = "";
+
 				if(list == null || list.length == 0) {
 					replyUL.html("");
 					return;
 				}
+
 				for (var i = 0 ; i < list.length; i++) {
 					str += '<li class="left clearfix" data-rno="'+list[i].rno+'">';
 					str += '<div><div class="headers">';
 					str += '<strong class="primary-font">'+list[i].replyer+'</strong>'
 					str += '<small class="pull-right text-muted">'+replyService.displayTime(list[i].replyDate)+'</small></div>';
 					str += '<p>'+ list[i].reply +'<p></div></li>';
-					console.log(list[i].replyDate)
 				}
 				replyUL.html(str);
+
+				showReplyPage(replyCnt);
 			})
 		}
 		// end showList
@@ -174,7 +185,7 @@
 				modal.find("input").val("");
 				modal.modal("hide");
 
-				showList(1);
+				showList(-1);
 			});
 		});
 
@@ -185,7 +196,7 @@
 
 				alert(result);
 				modal.modal("hide");
-				showList(1);
+				showList(pageNum);
 			});
 		});
 
@@ -199,7 +210,7 @@
 
 				modal.modal("hide");
 				modal.find("input").val("");
-				showList(1);
+				showList(pageNum);
 			});
 		});
 
@@ -219,6 +230,56 @@
 			});
 		});
 
+
+		var pageNum = 1;
+		var replyPageFooter = $(".panel-footer");
+
+		function showReplyPage(replyCnt) {
+			var endNum = Math.ceil(pageNum / 10.0) * 10;
+			var startNum = endNum - 9;
+
+			var prev = startNum != 1;
+			var next = false;
+
+			if(endNum * 10 >= replyCnt) {
+				endNum = Math.ceil(replyCnt/10.0);
+			}
+
+			if(endNum * 10 < replyCnt) {
+				next = true;
+			}
+			var str = "<ul class='pagination pull-right'>";
+
+			if(prev) {
+				str += "<li class='paginate_button previous'><a class='page-link' href='"+(startNum -1)+"'>prev</a><li>";
+			}
+
+			for (var i = startNum; i <= endNum ; i++) {
+				console.log("i:",i,"startNum:",startNum,"endNum:",endNum)
+				var active = pageNum == i? "active":"";
+
+				str+= "<li class='pagination_button "+active+"'><a class='page-link' href='"+i+"'>"+i+"</a></li>";
+			}
+
+			if(next) {
+				str += "<li class='paginate_button'><a class='page-link' href="+(endNum+1) + ">next</a></li>";
+			}
+
+			str += "</ul></div>";
+
+			console.log(str);
+
+			replyPageFooter.html(str);
+		}
+
+		replyPageFooter.on("click","li a",function (e) {
+			e.preventDefault();
+			var targetPageNum = $(this).attr("href");
+
+			pageNum = targetPageNum;
+
+			showList(pageNum);
+		})
 		
 	});
 </script>
@@ -238,7 +299,8 @@
 			operForm.find("#bno").remove();
 			operForm.attr("action","/board/list").submit();
 
-		})
+		});
+
 	})
 </script>
 

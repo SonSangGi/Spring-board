@@ -9,6 +9,9 @@
         <module name="jdbc-board" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="homework" target="1.5" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">

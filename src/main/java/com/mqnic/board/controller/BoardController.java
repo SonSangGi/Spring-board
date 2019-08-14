@@ -49,11 +49,6 @@ public class BoardController{
 		log.info("/get");
 		model.addAttribute("board",boardService.getBoard(bno));
 	}
-	@GetMapping("/modify")
-	public void modifyForm(@RequestParam("bno") Long bno,@ModelAttribute("cri") Criteria cri, Model model ) {
-		log.info("/modify");
-		model.addAttribute("board",boardService.getBoard(bno));
-	}
 
 	@PostMapping("/modify")
 	public String modify(BoardVO board,@ModelAttribute Criteria cri, RedirectAttributes rttr) {

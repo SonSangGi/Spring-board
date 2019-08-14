@@ -2,6 +2,7 @@ package com.mqnic.board.service;
 
 import com.mqnic.board.domain.BoardVO;
 import com.mqnic.board.domain.Criteria;
+import com.mqnic.board.domain.ReplyPageDTO;
 import com.mqnic.board.mapper.BoardMapper;
 import lombok.AllArgsConstructor;
 import lombok.Setter;
@@ -56,4 +57,5 @@ public class BoardServiceImpl implements BoardService{
 	public boolean removeBoard(Long bno) {
 		return boardMapper.deleteBoard(bno) == 1;
 	}
+
 }

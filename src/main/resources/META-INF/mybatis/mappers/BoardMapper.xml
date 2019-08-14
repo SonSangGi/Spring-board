@@ -30,7 +30,7 @@
             <foreach item='type' collection='typeArr'>
                 <trim prefix="OR">
                     <choose>
-                        <when test="type == 'T'.toString()">
+                        <when test="type == 'T'.toString()w">
                             title like '%' || #{keyword} || '%'
                         </when>
                         <when test="type == 'C'.toString()">
