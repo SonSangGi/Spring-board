@@ -3,8 +3,10 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:p="http://www.springframework.org/schema/p" xmlns:mybatis-spring="http://mybatis.org/schema/mybatis-spring"
        xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:mvc="http://www.springframework.org/schema/mvc"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+       xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
+
+    <task:annotation-driven/>
 
         <!-- 파일 업로더 -->
     <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver"
@@ -12,26 +14,11 @@
     p:maxUploadSizePerFile="2097152"
     p:uploadTempDir="file:/Users/sanggi-son/upload/tmp"
     p:maxInMemorySize="10485756"/>
-    <!-- DB 커넥션 풀
-    <bean id="dataSource"
-          class="org.apache.commons.dbcp2.BasicDataSource"
-          p:driverClassName="net.sf.log4jdbc.sql.jdbcapi.DriverSpy"
-          p:url="jdbc:log4jdbc:oracle:thin:@localhost:59161:xe"
-          p:username="book_ex"
-          p:password="zxcv1234" />
-
-          p:driverClassName="net.sf.log4jdbc.sql.jdbcapi.DriverSpy"
-          p:url="jdbc:log4jdbc:oracle:thin:@localhost:59161:xe"
-
-          p:driverClassName="oracle.jdbc.OracleDriver"
-          p:url="jdbc:oracle:thin:@localhost:59161:xe"
-    -->
-
 
     <bean id="hikariConfig" class="com.zaxxer.hikari.HikariConfig">
         <property name="poolName" value="springHikariCP" />
         <property name="driverClassName" value="net.sf.log4jdbc.sql.jdbcapi.DriverSpy"/>
-        <property name="jdbcUrl" value="jdbc:log4jdbc:oracle:thin:@localhost:59161:xe"/>
+        <property name="jdbcUrl" value="jdbc:log4jdbc:oracle:thin:@localhost:1521:xe"/>
         <property name="username" value="book_ex"/>
         <property name="password" value="zxcv1234"/>
     </bean>

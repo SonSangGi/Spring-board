@@ -2,6 +2,7 @@ package com.mqnic.board.mapper;
 
 import com.mqnic.board.domain.BoardVO;
 import com.mqnic.board.domain.Criteria;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -24,4 +25,6 @@ public interface BoardMapper {
 	public int getTotalCount(Criteria cri);
 
 	public Long getFisrtBoardNo();
+
+	public void updateReplyCnt(@Param("bno") Long bno, @Param("amount") int amount);
 }

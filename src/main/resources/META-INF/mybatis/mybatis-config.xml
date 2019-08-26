@@ -6,10 +6,12 @@
     <settings><setting name="jdbcTypeForNull" value="NULL"/></settings>
     <typeAliases>
         <typeAlias type="com.mqnic.board.domain.BoardVO" alias="Board"/>
+        <typeAlias type="com.mqnic.board.domain.BoardAttachVO" alias="BoardAttach"/>
         <typeAlias type="com.mqnic.board.domain.ReplyVO" alias="Reply"/>
     </typeAliases>
     <mappers>
         <mapper resource="META-INF/mybatis/mappers/BoardMapper.xml"/>
         <mapper resource="META-INF/mybatis/mappers/ReplyMapper.xml"/>
+        <mapper resource="META-INF/mybatis/mappers/BoardAttachMapper.xml"/>
     </mappers>
 </configuration>
