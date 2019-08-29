@@ -27,7 +27,7 @@ public class PageDTO {
 			this.endPage = realEnd;
 		}
 
-		this.startPage = this.endPage > 1 ? this.endPage - (pageBlock - 1) : 1;
+		this.startPage = this.endPage > pageBlock-1 ? this.endPage - (pageBlock - 1) : 1;
 
 		System.out.println(startPage);
 		System.out.println(endPage);

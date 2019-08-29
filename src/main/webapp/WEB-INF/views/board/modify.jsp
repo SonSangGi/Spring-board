@@ -1,3 +1,5 @@
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
@@ -65,6 +67,7 @@
 			<div class="panel-body">
 
 				<form role="form" action="/board/modify" method="post">
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
 					<input type="hidden" value="${board.bno}" name="bno">
 					<input type="hidden" value="${cri.pageNum}" name="pageNum">
 					<input type="hidden" value="${cri.amount}" name="amount">
@@ -82,8 +85,14 @@
 						<label>작성자</label>
 						<input type="text" name="writer" class="form-control" value="${board.writer}" readonly="readonly">
 					</div>
-					<button type="submit" class="btn btn-primary">수정</button>
-					<button type="submit" data-oper="remove" class="btn btn-danger">삭제</button>
+					<sec:authentication property="principal" var="pinfo"/>
+
+					<sec:authorize access="isAuthenticated()">
+						<c:if test="${pinfo.username eq board.writer}">
+							<button type="submit" class="btn btn-primary">수정</button>
+							<button type="submit" data-oper="remove" class="btn btn-danger">삭제</button>
+						</c:if>
+					</sec:authorize>
 					<button type="submit" data-oper="list" class="btn btn-default pull-right">목록</button>
 				</form>
 			</div>
@@ -116,38 +125,14 @@
 
 <script>
 	$(function () {
+		var csrfHeaderName = "${csrf.headerName}";
+		var csrfTokenValue = "${csrf.value}";
+		var bnoValue = ${board.bno};
 		var formObj = $("form");
 		var regex = new RegExp("(.*?)\.(exe|sh|zip|alz)$");
 		var maxSize = 1024 * 1024 * 1024 * 50;
 
-		$("button").on("click",function (e) {
-
-			e.preventDefault();
-
-			var operation = $(this).data("oper");
-
-			console.log(operation);
-
-			if(operation === 'remove') {
-				formObj.attr("action","/board/remove");
-			} else if (operation === 'list') {
-				formObj.attr("action","/board/list").attr("method","get");
-				var pageNumTag = $("input[name='pageNum']").clone();
-				var amountTag = $("input[name='amount']").clone();
-				var keywordTag = $("input[name='keyword]").clone();
-				var typeTag = $("input[name='type']").clone();
-
-				formObj.empty();
-				formObj.append(pageNumTag)
-					.append(amountTag)
-					.append(keywordTag)
-					.append(typeTag);
-			}
-			formObj.submit();
-		});
-
-		var bnoValue = ${board.bno}
-		//파일 리스트 출
+		//최초 파일 리스트 화면 처리
 		$.getJSON("/board/getAttachList",{bno:bnoValue},function (arr) {
 			console.log(arr);
 
@@ -179,6 +164,36 @@
 			});
 		});
 
+		// 버튼 클릭 이벤트
+		$("button").on("click",function (e) {
+
+			e.preventDefault();
+
+			var operation = $(this).data("oper");
+
+			console.log(operation);
+
+			if(operation === 'remove') {
+				formObj.attr("action","/board/remove");
+			} else if (operation === 'list') {
+				formObj.attr("action","/board/list").attr("method","get");
+				var pageNumTag = $("input[name='pageNum']").clone();
+				var amountTag = $("input[name='amount']").clone();
+				var keywordTag = $("input[name='keyword]").clone();
+				var typeTag = $("input[name='type']").clone();
+
+				formObj.empty();
+				formObj.append(pageNumTag)
+					.append(amountTag)
+					.append(keywordTag)
+					.append(typeTag);
+			} else{
+				formObj.attr("action","/board/modify");
+			}
+			formObj.submit();
+		});
+
+		// 파일 업로드 시 화면 처리
 		function showUploadResult(uploadResultArr) {
 			if(!uploadResultArr || uploadResultArr.length == 0) {return;}
 
@@ -209,6 +224,7 @@
 			uploadUL.append(str);
 		}
 
+		// 파일 삭제 버튼
 		$(".uploadResult").on("click","button",function (e) {
 
 			console.log("delete file");
@@ -220,6 +236,7 @@
 			}
 		});
 
+		//파일 업로드 가능 여부 체크
 		function checkExtension(fileName, fileSize) {
 
 			if(fileSize > maxSize) {
@@ -234,6 +251,7 @@
 			return true;
 		};
 
+		// 파일 업로드
 		$("input[type=file]").on("change",function (e) {
 			var formData = new FormData();
 
@@ -255,11 +273,18 @@
 				data : formData,
 				processData: false,
 				contentType: false,
+				beforeSend: function(xhr){
+					console.log();
+					xhr.setRequestHeader(csrfHeaderName,csrfTokenValue);
+				},
 				type: 'post',
 				dataType: 'json',
 				success: function (result) {
 					console.log(result);
 					showUploadResult(result);
+				},
+				error: function (err) {
+					console.log(err);
 				}
 			}); // ajax
 		});

@@ -8,7 +8,6 @@
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>
 
-    <!-- 클라이언트에서 보낸 정보를 request.setChacterEncoding("UTF-8")를 사용할 필요없이 모두 UTF-8로 변경 -->
     <filter>
         <filter-name>encodingFilter</filter-name>
         <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
@@ -16,20 +15,28 @@
             <param-name>encoding</param-name>
             <param-value>UTF-8</param-value>
         </init-param>
-        <init-param>
-            <param-name>forceEncoding</param-name>
-            <param-value>true</param-value>
-        </init-param>
     </filter>
     <filter-mapping>
         <filter-name>encodingFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
-    <!-- 빈을 관리하기 위한 applicationContext 설정 파일을 읽어옴 -->
+    <!-- spring security 필터 -->
+    <filter>
+        <filter-name>springSecurityFilterChain</filter-name>
+        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>springSecurityFilterChain</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <!-- 빈 설정 파일 -->
     <context-param>
         <param-name>contextConfigLocation</param-name>
-        <param-value>classpath:/META-INF/spring/applicationContext.xml</param-value>
+        <param-value>
+            classpath:/META-INF/spring/applicationContext.xml
+            classpath:/META-INF/spring/spring-security.xml</param-value>
     </context-param>
 
     <!-- DispatcherServlet -->
@@ -38,7 +45,9 @@
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
         <init-param>
             <param-name>contextConfigLocation</param-name>
-            <param-value>classpath:/META-INF/spring/dispatcher-servlet.xml</param-value>
+            <param-value>
+                        classpath:/META-INF/spring/dispatcher-servlet.xml
+            </param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>

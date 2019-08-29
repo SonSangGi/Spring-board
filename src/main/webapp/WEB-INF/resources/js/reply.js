@@ -37,11 +37,12 @@ var replyService = (function () {
 		});
 	}
 
-	function remove(rno, callback, error) {
-		console.log("remove....");
+	function remove(rno, replyer, callback, error) {
 		$.ajax({
 			type : "delete",
 			url : "/reply/"+rno ,
+			data: JSON.stringify({rno:rno,replyer:replyer}),
+			contentType: "application/json; charset=utf-8",
 			success: function (deleteResult, status, xhr) {
 				console.log("success");
 				if(callback) {

@@ -1,3 +1,4 @@
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
@@ -71,6 +72,7 @@
 			<div class="panel-body">
 
 				<form role="form" action="/board/register" method="post">
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
 					<div class="form-group">
 						<label>제목</label>
 						<input type="text" name="title" class="form-control">
@@ -81,7 +83,8 @@
 					</div>
 					<div class="form-group">
 						<label>작성자</label>
-						<input type="text" name="writer" class="form-control">
+						<input type="text" name="writer" class="form-control" readonly="readonly"
+						value='<sec:authentication property="principal.username"/>'>
 					</div>
 					<button type="submit" class="btn btn-default">전송</button>
 					<button type="reset" class="btn btn-danger pull-right">리셋</button>
@@ -121,8 +124,9 @@
 
 <script>
 	$(function () {
-
 		var formObj = $("form[role='form']");
+		var csrfHeaderName = "${_csrf.headerName}";
+		var csrfTokenValue = "${_csrf.token}"
 
 		$("button[type=submit]").on("click",function (e) {
 			e.preventDefault();
@@ -183,11 +187,16 @@
 				data : formData,
 				processData: false,
 				contentType: false,
+				beforeSend: function(xhr) {
+					xhr.setRequestHeader(csrfHeaderName, csrfTokenValue);
+				},
 				type: 'post',
 				dataType: 'json',
 				success: function (result) {
 					console.log(result);
 					showUploadResult(result);
+				},
+				error: function (error) {
 				}
 			}); // ajax
 		});
@@ -227,6 +236,7 @@
 			},1000);
 		})
 
+		// 업로드 파일 삭제
 		$(".uploadResult").on("click","span",function () {
 			var targetFile = $(this).data("file");
 			var type = $(this).data("type");
@@ -236,6 +246,9 @@
 
 			$.ajax({
 				url: '/deleteFile',
+				beforSend: function(xhr) {
+					xhr.setRequestHeader(csrfHeaderName, csrfTokenValue);
+				},
 				data: {fileName: targetFile, type: type},
 				dagaType: 'text',
 				type: 'post',

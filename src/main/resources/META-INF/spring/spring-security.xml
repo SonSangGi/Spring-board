@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:beans="http://www.springframework.org/schema/beans"
+        xmlns:security="http://www.springframework.org/schema/security"
+        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
+
+    <!-- 로그인 실패 시 핸들러 -->
+    <beans:bean id="customAccessDenied" class="com.mqnic.board.security.CustomAccessDeniedHandler"/>
+
+    <!-- 로그인 성공 시 핸들러
+    <beans:bean id="customLoginSuccess" class="com.mqnic.board.security.CustomLoginSuccessHandler"/>-->
+
+    <!-- 평문 사용 커스텀 인코더
+    <bean id="customPasswordEncoder" class="com.board.security.CustomNoOpPasswordEncoder"/>-->
+
+    <!-- 비밀번호 암호화 처리 -->
+    <beans:bean id="bcryptPasswordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"/>
+
+    <beans:bean id="customUserDetailService" class="com.mqnic.board.security.CustomUserDetailsService"/>
+
+    <security:http>
+        <!--
+           hasRole([role]), hasAuthority([authority]) : 해당 권한이 있으면 true
+           hasAnyRole([role,role2]),hasAuthority([authority,autority2]) : 여러 권한들중에서 하나라도 해당하는 권한이 있으면 true
+           principal : 현재 사용자의 정보를 의미
+           permitAll : 모든 사용자에게 허용
+           denyAll : 모든 사용자에게 거부
+        -->
+        <!-- 로그인 폼 지정
+        <security:form-login login-page="/customLogin" authentication-success-handler-ref="customLoginSuccess"/>-->
+        <security:form-login login-page="/customLogin"/>
+        <!--<security:access-denied-handler error-page="/accessError"/>-->
+        <security:access-denied-handler ref="customAccessDenied"/>
+        <security:logout logout-url="/customLogout" invalidate-session="true" delete-cookies="remember-me, JSESSION_ID"/>
+
+        <!-- 자동 로그인 설정 -->
+        <security:remember-me data-source-ref="dataSource" token-validity-seconds="604800"/>
+    </security:http>
+
+    <security:authentication-manager>
+
+        <security:authentication-provider user-service-ref="customUserDetailService">
+            <!-- <security:user-service>
+                 <security:user name="member" password="{noop}member" authorities="ROLE_MEMBER"/>
+                 <security:user name="admin" password="{noop}admin" authorities="ROLE_MEMBER,ROLE_ADMIN"/>
+             </security:user-service>-->
+            <!--
+            <security:jdbc-user-service data-source-ref="dataSource"
+            users-by-username-query="select userid, userpw, enabled from tbl_member where userid = ?"
+            authorities-by-username-query="select userid, auth from tbl_member_auth where userid = ?"/>
+            -->
+
+            <!--<security:password-encoder ref="customPasswordEncoder"/>-->
+            <security:password-encoder ref="bcryptPasswordEncoder"/>
+
+        </security:authentication-provider>
+
+    </security:authentication-manager>
+</beans:beans>

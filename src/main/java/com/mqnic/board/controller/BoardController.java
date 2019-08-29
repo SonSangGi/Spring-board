@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -42,9 +43,11 @@ public class BoardController{
 		model.addAttribute("pageMaker",new PageDTO(cri,total));
 	}
 	@GetMapping("/register")
+	@PreAuthorize("isAuthenticated()")
 	public void registerForm() {
 	}
 	@PostMapping("/register")
+	@PreAuthorize("isAuthenticated()")
 	public String register(BoardVO board, RedirectAttributes rttr) {
 		log.info("register : " + board);
 
@@ -66,27 +69,25 @@ public class BoardController{
 		model.addAttribute("board",boardService.getBoard(bno));
 	}
 
+	@PreAuthorize("isAuthenticated()")
 	@GetMapping("/modify")
 	public void modifyForm(@RequestParam("bno")Long bno, @ModelAttribute("cri")Criteria cri, Model model){
 		model.addAttribute("board",boardService.getBoard(bno));
 	}
 
 	@PostMapping("/modify")
-	public String modify(BoardVO board,@ModelAttribute Criteria cri, RedirectAttributes rttr) {
+	public String modify(BoardVO board, Criteria cri, RedirectAttributes rttr) {
 		log.info("modify :" + board);
 
 		if(boardService.modifyBoard(board)) {
 			rttr.addFlashAttribute("result","success");
 		}
-		rttr.addAttribute("pageNum",cri.getPageNum());
-		rttr.addAttribute("amount",cri.getAmount());
-		rttr.addAttribute("keyword",cri.getKeyword());
-		rttr.addAttribute("type",cri.getType());
-		return "redirect:/board/list";
+		return "redirect:/board/list"+cri.getListLink();
 	}
 
+	@PreAuthorize("principal.username == #writer")
 	@PostMapping("/remove")
-	public String remove(@RequestParam("bno")Long bno, @ModelAttribute Criteria cri, RedirectAttributes rttr) {
+	public String remove(@RequestParam("bno")Long bno, @ModelAttribute Criteria cri, RedirectAttributes rttr, String writer) {
 		log.info("remove :" + bno);
 
 		List<BoardAttachVO> attachList = boardService.getAttachList(bno);

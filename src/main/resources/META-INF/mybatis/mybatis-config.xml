@@ -8,10 +8,13 @@
         <typeAlias type="com.mqnic.board.domain.BoardVO" alias="Board"/>
         <typeAlias type="com.mqnic.board.domain.BoardAttachVO" alias="BoardAttach"/>
         <typeAlias type="com.mqnic.board.domain.ReplyVO" alias="Reply"/>
+        <typeAlias type="com.mqnic.board.domain.AuthVO" alias="Auth"/>
+        <typeAlias type="com.mqnic.board.domain.MemberVO" alias="Member"/>
     </typeAliases>
     <mappers>
         <mapper resource="META-INF/mybatis/mappers/BoardMapper.xml"/>
         <mapper resource="META-INF/mybatis/mappers/ReplyMapper.xml"/>
         <mapper resource="META-INF/mybatis/mappers/BoardAttachMapper.xml"/>
+        <mapper resource="META-INF/mybatis/mappers/MemberMapper.xml"/>
     </mappers>
 </configuration>
